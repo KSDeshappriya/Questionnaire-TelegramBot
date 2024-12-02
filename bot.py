@@ -4,7 +4,7 @@ from firebase_utils import get_questions, save_response, has_submitted
 import os
 import uuid
 
-app = Client("bot", bot_token=os.getenv("BOT_TOKEN"))
+app = Client("testingPyrogram_bot", api_id=os.getenv("API_ID"), api_hash=os.getenv("API_HASH"))
 
 user_data = {}  # Temporary storage for user sessions
 

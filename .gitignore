@@ -3,3 +3,8 @@ credentials.json
 serviceAccountKey.json
 msgs.txt
 .env
+firestore-export.json
+node_modules
+__pycache__
+**.session
+**.session-journal
