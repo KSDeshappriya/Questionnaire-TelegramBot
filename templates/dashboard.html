@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <!-- Questions Section -->
+    <h2>Questions</h2>
+    <ul>
+        {% for q in questions %}
+            <li>
+                {{ q.text }} ({{ q.type }})
+                <form method="POST" action="/edit_question/{{ q.question_id }}" style="display:inline;">
+                    <input type="text" name="text" value="{{ q.text }}" required>
+                    <select name="type">
+                        <option value="text" {% if q.type == "text" %}selected{% endif %}>Text</option>
+                        <option value="image" {% if q.type == "image" %}selected{% endif %}>Image</option>
+                    </select>
+                    <button type="submit">Edit</button>
+                </form>
+                <a href="/delete_question/{{ q.question_id }}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Add Question</h3>
+    <form method="POST" action="/add_question">
+        <input type="text" name="text" placeholder="Question text" required>
+        <select name="type">
+            <option value="text">Text</option>
+            <option value="image">Image</option>
+        </select>
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- Categories Section -->
+    <h2>Categories</h2>
+    <ul>
+        {% for category, count in categories.items() %}
+            <li>
+                <a href="/responses/{{ category }}">{{ category }}</a> ({{ count }} responses)
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

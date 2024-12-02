@@ -1,0 +1,5 @@
+.venv
+credentials.json
+serviceAccountKey.json
+msgs.txt
+.env

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Responses</title>
+</head>
+<body>
+    <h1>Responses for Category: {{ category }}</h1>
+    <ul>
+        {% for response in responses %}
+            <li>
+                <b>ID:</b> {{ response.unique_id }}<br>
+                <b>Answers:</b>
+                <ul>
+                    {% for q_id, answer in response.answers.items() %}
+                        <li>Q{{ q_id }}: {{ answer }}</li>
+                    {% endfor %}
+                </ul>
+                <b>Images:</b>
+                <ul>
+                    {% for img in response.images %}
+                        <li><a href="{{ img }}">View Image</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Dashboard</a>
+</body>
+</html>
