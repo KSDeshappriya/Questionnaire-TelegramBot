@@ -1,4 +1,5 @@
 .venv
+Extra
 credentials.json
 serviceAccountKey.json
 msgs.txt
