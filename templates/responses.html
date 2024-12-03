@@ -14,6 +14,21 @@
         }
         .image-preview {
             height: 150px;
+            object-fit: cover; /* Ensures the image covers the area */
+        }
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -43,7 +58,10 @@
                         <ul class="list-group">
                             {% for img in response.images %}
                             <li class="list-group-item">
-                                <div id="image-container-{{ response.unique_id }}" class="text-decoration-none"><i class="fas fa-image me-2"></i></div>
+                                <div id="image-container-{{ response.unique_id }}" class="text-decoration-none">
+                                    <i class="fas fa-image me-2"></i>
+                                    <span class="loader" id="loader-{{ response.unique_id }}"></span>
+                                </div>
                                 <script>
                                     // Assuming img contains the base64 string
                                     var url = "https://api.allorigins.win/get?url=https://drive.usercontent.google.com/download?id=" + encodeURIComponent('{{ img }}');
@@ -66,10 +84,15 @@
                                             imgElement.src = imgBase64; // Set the src to the base64 string
                                             imgElement.classList.add('image-preview'); // Add responsive class
 
-                                            // Append the img element to the container
+                                            // Hide the loader and append the img element to the container
+                                            document.getElementById('loader-{{ response.unique_id }}').style.display = 'none';
                                             document.getElementById('image-container-{{ response.unique_id }}').appendChild(imgElement);
                                         })
-                                        .catch(error => console.error('Error fetching image:', error));
+                                        .catch(error => {
+                                            console.error('Error fetching image:', error);
+                                            // Hide the loader if there's an error
+                                            document.getElementById('loader-{{ response.unique_id }}').style.display = 'none';
+                                        });
                                 </script>
                             </li>
                             {% endfor %}
