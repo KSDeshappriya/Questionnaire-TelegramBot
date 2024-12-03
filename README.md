@@ -81,8 +81,9 @@ Installation
     
     *   Create a `.env` file in the project root:
         
-        ```bash
+        ```cmd
         BOT_TOKEN=<your-telegram-bot-token>
+        BOT_USERNAME=<your-telegram-bot-USERNAME(without @)>
         API_ID=<your-telegram-api-id>
         API_HASH=<your-telegram-api-hash>
         GOOGLE_SERVICE_ACCOUNT_JSON=service_account.json
