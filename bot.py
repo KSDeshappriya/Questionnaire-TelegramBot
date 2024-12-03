@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from google_drive import create_folder, upload_file
+from google_drive import create_folder, upload_file, share_folder
 from firebase_utils import get_questions, save_response, has_submitted, db
 import os
 import uuid
@@ -101,7 +101,7 @@ async def complete_form(message):
         os.remove(image)  # Clean up the local image
 
     # Save the response details (this could be a call to Firebase or another storage system)
-    save_response(user_id, unique_id, subfolder, answers, images)
+    save_response(user_id, unique_id, share_folder(subfolder), answers, images)
 
     # Send confirmation to the user
     await message.reply(f"Your response has been saved! ID: {unique_id}")

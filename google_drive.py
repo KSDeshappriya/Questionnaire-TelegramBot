@@ -30,3 +30,21 @@ def upload_file(file_path, folder_id):
     media = MediaFileUpload(file_path, mimetype=mimetypes.guess_type(file_path)[0])
     file = drive_service.files().create(body=file_metadata, media_body=media, fields="id").execute()
     return file["id"]
+
+def share_folder(folder_id):
+    service = initialize_drive()
+
+    permission = {
+        "role": "reader",  # Can be 'reader' or 'writer'
+        "type": "anyone"   # Makes the folder accessible to anyone with the link
+    }
+
+    try:
+        service.permissions().create(
+            fileId=folder_id,
+            body=permission,
+            fields="id"
+        ).execute()
+        print(f"Folder {folder_id} is now shared.")
+    except Exception as e:
+        print(f"Error sharing folder: {e}")
