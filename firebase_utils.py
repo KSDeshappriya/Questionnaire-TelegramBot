@@ -12,13 +12,15 @@ def get_questions():
     questions = db.collection("questions").order_by("question_id").get()
     return [q.to_dict() for q in questions]
 
-def save_response(user_id, unique_id, folder_path, answers, images):
-    """Save user responses to Firestore."""
+def save_response(user_id, unique_id, subfolder, answers, images):
+    # Ensure user_id is a string
+    user_id = str(user_id)
+
     db.collection("responses").document(user_id).set({
         "unique_id": unique_id,
-        "folder": folder_path,
+        "folder": subfolder,
         "answers": answers,
-        "images": images,
+        "images": images
     })
 
 def has_submitted(user_id):

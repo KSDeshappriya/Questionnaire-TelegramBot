@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from google_drive import create_folder, upload_file
-from firebase_utils import get_questions, save_response, has_submitted
+from firebase_utils import get_questions, save_response, has_submitted, db
 import os
 import uuid
 
@@ -48,7 +48,9 @@ async def handle_text_response(client, message):
     questions = get_questions()
 
     if current_q < len(questions):
-        user_data[user_id]["answers"][questions[current_q]["question_id"]] = message.text
+        question_id = questions[current_q]["question_id"]
+        user_data[user_id]["answers"][question_id] = message.text
+        print(f"Updated answers for user {user_id}: {user_data[user_id]['answers']}")  # Print answers for debugging
         user_data[user_id]["current_q"] += 1  # Move to the next question
         await ask_next_question(message)  # Ask the next question
 
@@ -56,10 +58,6 @@ async def handle_text_response(client, message):
 @app.on_message(filters.photo)
 async def handle_image(client, message):
     user_id = message.from_user.id
-
-    # Ensure the user data structure includes "images" key
-    if user_id not in user_data:
-        user_data[user_id] = {"answers": {}, "images": [], "current_q": 0}
 
     file_path = await message.download()  # Download the image to the local file system
     user_data[user_id]["images"].append(file_path)  # Store the image path
@@ -70,18 +68,19 @@ async def handle_image(client, message):
 
 # Function to complete the form after all questions are answered
 async def complete_form(message):
-    user_id = str(message.from_user.id)  # Ensure user_id is a string
+    user_id = message.from_user.id  # Ensure user_id is a string
 
     # Initialize user data if not present
     if user_id not in user_data:
         print(f"New user: {user_id}, initializing data.")
-        user_data[user_id] = {"answers": {}, "images": []}
+        # user_data[user_id] = {"answers": {}, "images": []}
     else:
         print(f"User {user_id} already exists, accessing data.")
 
     answers = user_data[user_id]["answers"]
     images = user_data[user_id]["images"]
 
+    print(answers)
     # Assume that the first answer determines the category (e.g., "Bat", "Ball", "Car")
     category = answers.get("1", "Uncategorized")  # Fallback to "Uncategorized" if answer is missing
     parent_folder = create_folder(category)  # Create a parent folder in Google Drive
