@@ -24,12 +24,27 @@ def create_folder(name, parent_id=None):
     folder = drive_service.files().create(body=folder_metadata, fields="id").execute()
     return folder["id"]
 
-def upload_file(file_path, folder_id):
-    """Upload a file to a Google Drive folder."""
-    file_metadata = {"name": os.path.basename(file_path), "parents": [folder_id]}
-    media = MediaFileUpload(file_path, mimetype=mimetypes.guess_type(file_path)[0])
-    file = drive_service.files().create(body=file_metadata, media_body=media, fields="id").execute()
-    return file["id"]
+def upload_file(file_path, parent_folder_id):
+    service = initialize_drive()
+    
+    file_metadata = {
+        "name": os.path.basename(file_path),
+        "parents": [parent_folder_id]  # Assign to the specific folder
+    }
+    media = MediaFileUpload(file_path, resumable=True)
+    
+    try:
+        file = service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields="id"  # Request only the file ID
+        ).execute()
+        
+        print(f"Uploaded file {file_path} with ID: {file.get('id')}")
+        return file.get("id")  # Return the file ID
+    except Exception as e:
+        print(f"Error uploading file {file_path}: {e}")
+        return None
 
 def share_folder(folder_id):
     service = initialize_drive()
@@ -46,5 +61,6 @@ def share_folder(folder_id):
             fields="id"
         ).execute()
         print(f"Folder {folder_id} is now shared.")
+        return folder_id
     except Exception as e:
         print(f"Error sharing folder: {e}")

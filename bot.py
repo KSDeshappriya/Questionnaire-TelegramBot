@@ -96,12 +96,16 @@ async def complete_form(message):
     os.remove(answers_file)  # Clean up the local file
 
     # Upload images to the subfolder in Google Drive
+    # Save images and collect file IDs
+    image_file_ids = []
     for image in images:
-        upload_file(image, subfolder)
-        os.remove(image)  # Clean up the local image
+        file_id = upload_file(image, subfolder)
+        if file_id:
+            image_file_ids.append(file_id)
+        os.remove(image)
 
     # Save the response details (this could be a call to Firebase or another storage system)
-    save_response(user_id, unique_id, share_folder(subfolder), answers, images)
+    save_response(user_id, unique_id, share_folder(subfolder), answers, image_file_ids)
 
     # Send confirmation to the user
     await message.reply(f"Your response has been saved! ID: {unique_id}")
