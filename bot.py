@@ -5,7 +5,7 @@ import os
 import uuid
 
 # Initialize the Telegram bot client
-app = Client("testingPyrogram_bot", bot_token=os.getenv("BOT_TOKEN"), api_id=os.getenv("API_ID"), api_hash=os.getenv("API_HASH"))
+app = Client(f"{os.getenv("BOT_USERNAME")}", bot_token=os.getenv("BOT_TOKEN"), api_id=os.getenv("API_ID"), api_hash=os.getenv("API_HASH"))
 
 user_data = {}  # Temporary storage for user sessions
 
