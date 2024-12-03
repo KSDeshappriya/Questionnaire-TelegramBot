@@ -99,6 +99,13 @@ Installation
 
 * * *
 
+Guide for Creating `.json` and `.env` Files
+---------------
+
+check this [Guide](Guide.md) for more details.
+
+* * *
+
 Running the Bot
 ---------------
 
