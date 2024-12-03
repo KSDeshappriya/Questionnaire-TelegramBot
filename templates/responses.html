@@ -46,8 +46,8 @@
                                 <div id="image-container-{{ response.unique_id }}" class="text-decoration-none"><i class="fas fa-image me-2"></i></div>
                                 <script>
                                     // Assuming img contains the base64 string
-                                    const url = "https://api.allorigins.win/get?url=https://drive.usercontent.google.com/download?id=" + encodeURIComponent('{{ img }}');
-                                    let imgBase64;
+                                    var url = "https://api.allorigins.win/get?url=https://drive.usercontent.google.com/download?id=" + encodeURIComponent('{{ img }}');
+                                    var imgBase64;
 
                                     // Fetch JSON data
                                     fetch(url)
