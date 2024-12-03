@@ -13,7 +13,7 @@ user_data = {}  # Temporary storage for user sessions
 @app.on_message(filters.command("start"))
 async def start(client, message):
     if has_submitted(str(message.from_user.id)):
-        await message.reply("You have already submitted your response!")
+        await message.reply("<b>You have already submitted your response!</b>")
         return
 
     # Initialize user session with both answers and images keys
@@ -32,11 +32,11 @@ async def ask_next_question(message):
         print(f"Current Question: {current_q + 1} of {len(questions)}")
 
         if "type" in question and question["type"] == "text":
-            await message.reply(question["text"])
+            await message.reply(f"<b>Question {current_q + 1}:</b> {question['text']}")
         elif "type" in question and question["type"] == "image":
-            await message.reply(question["text"])
+            await message.reply(f"<b>Question {current_q + 1}:</b> {question['text']}")
         else:
-            await message.reply(question["text"])  # Fallback to text if type is missing or invalid
+            await message.reply(f"<b>Question {current_q + 1}:</b> {question['text']}")  # Fallback to text if type is missing or invalid
     else:
         await complete_form(message)  # If no more questions, complete the form
 
@@ -73,7 +73,6 @@ async def complete_form(message):
     # Initialize user data if not present
     if user_id not in user_data:
         print(f"New user: {user_id}, initializing data.")
-        # user_data[user_id] = {"answers": {}, "images": []}
     else:
         print(f"User {user_id} already exists, accessing data.")
 
@@ -81,6 +80,8 @@ async def complete_form(message):
     images = user_data[user_id]["images"]
 
     print(answers)
+    await message.reply("<b>This is the end of the questions.</b> <i>Wait for the responses to be saved.</i>")
+
     # Assume that the first answer determines the category (e.g., "Bat", "Ball", "Car")
     category = answers.get("1", "Uncategorized")  # Fallback to "Uncategorized" if answer is missing
     parent_folder = create_folder(category)  # Create a parent folder in Google Drive
@@ -108,7 +109,7 @@ async def complete_form(message):
     save_response(user_id, unique_id, share_folder(subfolder), answers, image_file_ids)
 
     # Send confirmation to the user
-    await message.reply(f"Your response has been saved! ID: {unique_id}")
+    await message.reply(f"<b>Your response has been saved!</b> <i>ID: {unique_id}</i>")
 
     # Cleanup the user session
     del user_data[user_id]
