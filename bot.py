@@ -4,6 +4,11 @@ from firebase_utils import get_questions, save_response, has_submitted, db
 import os
 import uuid
 
+# creator
+creator_fiverr = "https://www.fiverr.com/ksdeshp"
+creator_linkdin = "https://www.linkedin.com/in/kavindu-shehan-917031255/"
+creator_email = "ksdeshappriya.official@gmail.com"
+
 # Initialize the Telegram bot client
 app = Client(f"{os.getenv("BOT_USERNAME")}", bot_token=os.getenv("BOT_TOKEN"), api_id=os.getenv("API_ID"), api_hash=os.getenv("API_HASH"))
 
@@ -13,11 +18,19 @@ user_data = {}  # Temporary storage for user sessions
 @app.on_message(filters.command("start"))
 async def start(client, message):
     if has_submitted(str(message.from_user.id)):
-        await message.reply("<b>You have already submitted your response!</b>")
+        await message.reply("<i>Welcome back!</i> <b>You have already submitted your response!</b>")
         return
 
     # Initialize user session with both answers and images keys
     user_data[message.from_user.id] = {"answers": {}, "images": [], "current_q": 0}
+    # Send a welcome message
+    welcome_message = (
+        f"<b>Hello @{message.from_user.first_name} !</b>\n\n"
+        "<b>Welcome to our survey bot.</b> We'll ask you a few questions, and you can "
+        "respond with text or images as requested. Let's get started!"
+        f"\n\n<i>Created by <b>ksdeshp</b></i>: [onFiverr]({creator_fiverr}) | [onLinkedIn]({creator_linkdin}) |"
+    )
+    await message.reply(welcome_message)
     await ask_next_question(message)
 
 # Function to ask the next question
