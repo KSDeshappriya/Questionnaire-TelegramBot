@@ -77,13 +77,14 @@ async def complete_form(message):
         print(f"User {user_id} already exists, accessing data.")
 
     answers = user_data[user_id]["answers"]
+    answers["1"] = answers.get("1", "Uncategorized").lower()
     images = user_data[user_id]["images"]
 
     print(answers)
     await message.reply("<b>This is the end of the questions.</b> <i>Wait for the responses to be saved.</i>")
 
     # Assume that the first answer determines the category (e.g., "Bat", "Ball", "Car")
-    category = answers.get("1", "Uncategorized")  # Fallback to "Uncategorized" if answer is missing
+    category = answers.get("1", "Uncategorized").lower()  # Fallback to "Uncategorized" if answer is missing
     parent_folder = create_folder(category)  # Create a parent folder in Google Drive
     unique_id = f"{category}-{uuid.uuid4().hex[:6]}"  # Generate a unique ID for this submission
     subfolder = create_folder(unique_id, parent_folder)  # Create a subfolder for this specific entry
@@ -106,7 +107,7 @@ async def complete_form(message):
         os.remove(image)
 
     # Save the response details (this could be a call to Firebase or another storage system)
-    save_response(user_id, unique_id, share_folder(subfolder), answers, image_file_ids)
+    save_response(user_id, unique_id, share_folder(parent_folder), share_folder(subfolder), answers, image_file_ids)
 
     # Send confirmation to the user
     await message.reply(f"<b>Your response has been saved!</b> <i>ID: {unique_id}</i>")

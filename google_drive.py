@@ -14,15 +14,30 @@ def initialize_drive():
 drive_service = initialize_drive()
 
 def create_folder(name, parent_id=None):
-    """Create a folder in Google Drive."""
-    folder_metadata = {
-        "name": name,
-        "mimeType": "application/vnd.google-apps.folder",
-    }
+    """Create a folder in Google Drive or return the existing folder ID if it already exists."""
+    # Check if the folder already exists
+    query = f"mimeType='application/vnd.google-apps.folder' and name='{name}'"
     if parent_id:
-        folder_metadata["parents"] = [parent_id]
-    folder = drive_service.files().create(body=folder_metadata, fields="id").execute()
-    return folder["id"]
+        query += f" and '{parent_id}' in parents"
+
+    # Search for the folder
+    response = drive_service.files().list(q=query, fields="files(id)").execute()
+    folders = response.get('files', [])
+
+    if folders:
+        # Folder already exists, return the ID of the existing folder
+        return folders[0]['id']
+    else:
+        # Folder does not exist, create a new one
+        folder_metadata = {
+            "name": name,
+            "mimeType": "application/vnd.google-apps.folder",
+        }
+        if parent_id:
+            folder_metadata["parents"] = [parent_id]
+        
+        folder = drive_service.files().create(body=folder_metadata, fields="id").execute()
+        return folder["id"]
 
 def upload_file(file_path, parent_folder_id):
     service = initialize_drive()
