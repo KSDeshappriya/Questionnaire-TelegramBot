@@ -49,7 +49,8 @@
                     {% for response in responses %}
                     <div class="list-group-item p-4 mb-3 shadow-sm rounded">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="fw-bold">ID: {{ response.unique_id }}</span>
+                            <span class="fw-bold">User ID: {{ response.user_id }}</span>
+                            <span class="fw-bold">Unique ID: {{ response.unique_id }}</span>
                         </div>
                         <h5 class="mb-3">Answers:</h5>
                         <ul class="list-group mb-3">

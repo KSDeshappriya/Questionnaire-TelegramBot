@@ -3,6 +3,7 @@ from google_drive import create_folder, upload_file, share_folder
 from firebase_utils import get_questions, save_response, has_submitted, db
 import os
 import uuid
+import datetime
 
 # creator
 creator_fiverr = "https://www.fiverr.com/ksdeshp"
@@ -17,9 +18,9 @@ user_data = {}  # Temporary storage for user sessions
 # Start command, initialize user data
 @app.on_message(filters.command("start"))
 async def start(client, message):
-    if has_submitted(str(message.from_user.id)):
-        await message.reply("<i>Welcome back!</i> <b>You have already submitted your response!</b>")
-        return
+    # if has_submitted(str(message.from_user.id)):
+    #     await message.reply("<i>Welcome back!</i> <b>You have already submitted your response!</b>")
+    #     return
 
     # Initialize user session with both answers and images keys
     user_data[message.from_user.id] = {"answers": {}, "images": [], "current_q": 0}
@@ -99,7 +100,7 @@ async def complete_form(message):
     # Assume that the first answer determines the category (e.g., "Bat", "Ball", "Car")
     category = answers.get("1", "Uncategorized").lower()  # Fallback to "Uncategorized" if answer is missing
     parent_folder = create_folder(category)  # Create a parent folder in Google Drive
-    unique_id = f"{category}-{uuid.uuid4().hex[:6]}"  # Generate a unique ID for this submission
+    unique_id = f"{user_id}-{uuid.uuid4().hex[:6]}"  # Generate a unique ID for this submission
     subfolder = create_folder(unique_id, parent_folder)  # Create a subfolder for this specific entry
 
     # Save answers to a text file
@@ -113,11 +114,29 @@ async def complete_form(message):
     # Upload images to the subfolder in Google Drive
     # Save images and collect file IDs
     image_file_ids = []
+    downloads_dir = "./downloads"
+    os.makedirs(downloads_dir, exist_ok=True) # Create downloads directory if it doesn't exist
+
     for image in images:
-        file_id = upload_file(image, subfolder)
-        if file_id:
-            image_file_ids.append(file_id)
-        os.remove(image)
+        try:
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            file_name = os.path.basename(image)
+            new_file_name = os.path.join(downloads_dir, f"{category}-{timestamp}-{file_name}")
+            os.rename(image, new_file_name)
+            file_id = upload_file(new_file_name, subfolder) # Use the new file name
+            if file_id:
+                image_file_ids.append(file_id)
+                os.remove(new_file_name) #remove after upload
+
+        except FileNotFoundError as e:
+            print(f"Error: File not found - {e}")
+            #Consider adding logging here for more robust error handling.
+        except OSError as e:
+            print(f"Error during file operation: {e}")
+            #Consider adding logging here for more robust error handling.
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            #Consider adding logging here for more robust error handling.
 
     # Save the response details (this could be a call to Firebase or another storage system)
     save_response(user_id, unique_id, share_folder(parent_folder), share_folder(subfolder), answers, image_file_ids)

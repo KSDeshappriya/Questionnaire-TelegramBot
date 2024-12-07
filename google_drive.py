@@ -63,19 +63,44 @@ def upload_file(file_path, parent_folder_id):
 
 def share_folder(folder_id):
     service = initialize_drive()
+    email = "kavishen1025@gmail.com"
+    
+    if not email:
+        print("Error: Admin_Gmail environment variable is not set.")
+        return
 
-    permission = {
+    print(f"Sharing folder with email: {email}")  # Debugging line
+
+    # Share with a specific user (edit permissions)
+    user_permission = {
+        "role": "writer",  # Can be 'reader' or 'writer'
+        "type": "user",    # Share with a specific user
+        "emailAddress": email  # The email address of the user to share with
+    }
+
+    # Share with anyone (view permissions)
+    anyone_permission = {
         "role": "reader",  # Can be 'reader' or 'writer'
         "type": "anyone"   # Makes the folder accessible to anyone with the link
     }
 
     try:
+        # Share with the specific user
         service.permissions().create(
             fileId=folder_id,
-            body=permission,
+            body=user_permission,
             fields="id"
         ).execute()
-        print(f"Folder {folder_id} is now shared.")
+        print(f"Folder {folder_id} is now shared with {email} (edit permissions).")
+
+        # Share with anyone
+        service.permissions().create(
+            fileId=folder_id,
+            body=anyone_permission,
+            fields="id"
+        ).execute()
+        print(f"Folder {folder_id} is now shared with anyone (view permissions).")
+
         return folder_id
     except Exception as e:
         print(f"Error sharing folder: {e}")

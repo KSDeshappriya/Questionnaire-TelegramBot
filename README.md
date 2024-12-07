@@ -25,10 +25,8 @@ Features
     *   Admins can:
         *   Add, edit, or delete questions.
         *   View and filter user responses via Firebase.
-5.  **One-Time Submission**:
-    
-    *   Prevents users from submitting the questionnaire multiple times.
-6.  **Cloud Integration**:
+
+5.  **Cloud Integration**:
     
     *   Text files and images are uploaded to Google Drive.
     *   Submission metadata is saved in Firebase.
